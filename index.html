@@ -848,6 +848,138 @@ footer a { color: var(--muted); text-decoration: underline; }
   <a href="https://trakk.pay.clickbank.net/?cbitems=1" target="_blank" class="cta-primary">Get Instant Access →</a>
 </div>
 
+<!-- EMAIL CAPTURE POPUP -->
+<div id="emailPopupOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+  <div id="emailPopupBox" style="
+    background: linear-gradient(160deg, #0F0F1A 0%, #1A1200 100%);
+    border: 1px solid rgba(245,166,35,0.5);
+    border-radius: 16px;
+    padding: 48px 40px 40px;
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 0 80px rgba(245,166,35,0.15), 0 0 0 1px rgba(245,166,35,0.1);
+    animation: popupIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  ">
+    <!-- Close button -->
+    <button id="emailPopupClose" onclick="closeEmailPopup()" style="
+      position:absolute; top:16px; right:16px;
+      background:rgba(245,166,35,0.1); border:1px solid rgba(245,166,35,0.2);
+      color:#F5A623; width:32px; height:32px; border-radius:50%;
+      font-size:18px; line-height:1; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition: background 0.2s;
+    " aria-label="Close">×</button>
+
+    <!-- Gift icon -->
+    <div style="font-size:48px; margin-bottom:16px; text-align:center;">🎁</div>
+
+    <!-- Headline -->
+    <div style="font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#F5A623; text-align:center; margin-bottom:12px;">FREE DOWNLOAD</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif; font-size:clamp(28px,6vw,40px); line-height:1.05; text-align:center; margin-bottom:12px; color:#E8E8F0;">
+      Grab Your FREE<br><span style="color:#F5A623;">AI Money Cheat Sheet</span>
+    </h2>
+    <p style="color:#888899; font-size:15px; text-align:center; line-height:1.6; margin-bottom:28px;">
+      The exact AI tools, prompts &amp; shortcuts our top students use to earn their first $500 online — delivered straight to your inbox.
+    </p>
+
+    <!-- Form -->
+    <div id="emailPopupForm">
+      <input id="emailPopupInput" type="email" placeholder="Enter your best email..." style="
+        width:100%; padding:16px 20px;
+        background:rgba(255,255,255,0.06); border:1px solid rgba(245,166,35,0.3);
+        border-radius:8px; color:#E8E8F0; font-family:'Outfit',sans-serif; font-size:16px;
+        outline:none; margin-bottom:12px; transition:border-color 0.2s;
+      " />
+      <button onclick="submitEmailPopup()" style="
+        width:100%; padding:18px;
+        background:linear-gradient(135deg,#F5A623,#E8920A);
+        color:#000; font-family:'Outfit',sans-serif; font-size:17px; font-weight:800;
+        border:none; border-radius:8px; cursor:pointer;
+        box-shadow:0 8px 32px rgba(245,166,35,0.35);
+        transition:transform 0.2s,box-shadow 0.2s;
+      " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 40px rgba(245,166,35,0.5)';"
+         onmouseout="this.style.transform='';this.style.boxShadow='0 8px 32px rgba(245,166,35,0.35)';">
+        Send Me The Cheat Sheet →
+      </button>
+      <p id="emailPopupError" style="color:#FF5252; font-size:13px; margin-top:8px; display:none; text-align:center;">Please enter a valid email address.</p>
+      <p style="font-size:12px; color:#555566; text-align:center; margin-top:12px;">No spam. Unsubscribe anytime.</p>
+    </div>
+
+    <!-- Success message -->
+    <div id="emailPopupSuccess" style="display:none; text-align:center; padding:16px 0;">
+      <div style="font-size:52px; margin-bottom:16px;">✅</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:32px; color:#F5A623; margin-bottom:8px;">You're In!</h3>
+      <p style="color:#888899; font-size:15px; line-height:1.6;">Check your inbox — your AI Cheat Sheet is on its way. 🚀</p>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes popupIn {
+  from { opacity:0; transform:scale(0.85) translateY(20px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+#emailPopupInput:focus { border-color: rgba(245,166,35,0.7); }
+</style>
+
+<script>
+// ── Email Popup Logic ──────────────────────────────────────────────
+const POPUP_WEBHOOK = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+const POPUP_STORAGE_KEY = 'aispro_subscribed';
+
+function showEmailPopup() {
+  if (localStorage.getItem(POPUP_STORAGE_KEY)) return;
+  const overlay = document.getElementById('emailPopupOverlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEmailPopup() {
+  const overlay = document.getElementById('emailPopupOverlay');
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function submitEmailPopup() {
+  const input = document.getElementById('emailPopupInput');
+  const errEl = document.getElementById('emailPopupError');
+  const email = input.value.trim();
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!valid) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  fetch(POPUP_WEBHOOK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, source: 'aisecretspro_popup', timestamp: new Date().toISOString() })
+  }).catch(() => {});
+
+  localStorage.setItem(POPUP_STORAGE_KEY, '1');
+  document.getElementById('emailPopupForm').style.display = 'none';
+  document.getElementById('emailPopupSuccess').style.display = 'block';
+
+  setTimeout(closeEmailPopup, 3000);
+}
+
+// Show after 5 seconds if not already subscribed
+setTimeout(showEmailPopup, 5000);
+
+// Close on overlay click (outside box)
+document.getElementById('emailPopupOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeEmailPopup();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeEmailPopup();
+});
+</script>
+
 <script>
 // Sticky bar on scroll
 window.addEventListener('scroll', () => {
