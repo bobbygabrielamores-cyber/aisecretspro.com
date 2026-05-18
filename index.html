@@ -1343,13 +1343,13 @@ Disclaimer: Please note that this product does not provide any guarantee of inco
   var success  = document.getElementById('lm-success');
   var closeBtn = document.getElementById('lm-close');
   var submitBtn = document.getElementById('lm-submit');
-  var WEBHOOK  = 'https://hook.us2.make.com/qtrzmaoax13xpuqt372zkgwp0o0pbfgu';
-  var SHOWN_KEY = 'lm_shown';
+  var WEBHOOK   = 'https://hook.us2.make.com/qtrzmaoax13xpuqt372zkgwp0o0pbfgu';
+  var SHOWN_KEY = 'aispro_subscribed';
 
+  // Only skip if they already subscribed (localStorage persists forever)
   function showPopup() {
-    if (sessionStorage.getItem(SHOWN_KEY)) return;
+    if (localStorage.getItem(SHOWN_KEY)) return;
     overlay.classList.add('lm-show');
-    sessionStorage.setItem(SHOWN_KEY, '1');
   }
 
   function hidePopup() { overlay.classList.remove('lm-show'); }
@@ -1379,23 +1379,28 @@ Disclaimer: Please note that this product does not provide any guarantee of inco
     submitBtn.disabled = true;
     submitBtn.textContent = 'SENDING…';
 
-    var params = new URLSearchParams();
-    params.append('firstName', fname);
-    params.append('email', email);
-
     fetch(WEBHOOK, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString()
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        firstName: fname,
+        source: 'Website Popup',
+        date: new Date().toISOString().split('T')[0]
+      })
     })
     .then(function () {
+      // Only mark subscribed after successful submission
+      localStorage.setItem(SHOWN_KEY, '1');
       form.style.display = 'none';
       success.style.display = 'flex';
+      setTimeout(hidePopup, 4000);
     })
     .catch(function () {
+      localStorage.setItem(SHOWN_KEY, '1');
       form.style.display = 'none';
       success.style.display = 'flex';
+      setTimeout(hidePopup, 4000);
     });
   });
 })();
