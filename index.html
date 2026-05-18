@@ -1020,5 +1020,265 @@ Disclaimer: Please note that this product does not provide any guarantee of inco
 
 
 <img src="https://i.jvzoo.com/116817/441633/9" alt="" border="0" width="1" height="1" />
+
+<!-- ===== LEAD MAGNET POPUP ===== -->
+<style>
+#lm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5,13,26,0.88);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#lm-overlay.lm-show { display: flex; }
+
+#lm-box {
+  position: relative;
+  background: linear-gradient(135deg, #091628 0%, #0d1f38 100%);
+  border: 1px solid rgba(0,200,255,0.35);
+  box-shadow: 0 0 60px rgba(0,200,255,0.15), 0 0 0 1px rgba(0,200,255,0.08);
+  border-radius: 12px;
+  max-width: 520px;
+  width: 100%;
+  padding: 48px 44px 40px;
+  text-align: center;
+  animation: lm-drop .35s ease;
+}
+@keyframes lm-drop {
+  from { opacity:0; transform: translateY(-22px) scale(.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+#lm-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  background: none;
+  border: none;
+  color: rgba(0,200,255,0.5);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color .2s;
+}
+#lm-close:hover { color: #00c8ff; }
+
+.lm-badge {
+  display: inline-block;
+  background: rgba(0,200,255,0.12);
+  border: 1px solid rgba(0,200,255,0.3);
+  color: #00c8ff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+#lm-box h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.25rem, 4vw, 1.65rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+#lm-box h2 span { color: #00c8ff; }
+
+#lm-box p {
+  color: #7a9bbf;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.lm-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0,200,255,0.06);
+  border: 1px solid rgba(0,200,255,0.15);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: #7a9bbf;
+}
+.lm-preview strong { color: #00c8ff; }
+
+#lm-form { display: flex; flex-direction: column; gap: 12px; }
+
+#lm-form input {
+  background: rgba(5,13,26,0.7);
+  border: 1px solid rgba(0,200,255,0.25);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  padding: 13px 16px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+#lm-form input::placeholder { color: rgba(122,155,191,0.6); }
+#lm-form input:focus {
+  border-color: #00c8ff;
+  box-shadow: 0 0 0 3px rgba(0,200,255,0.1);
+}
+
+#lm-submit {
+  background: linear-gradient(135deg, #00c8ff, #007bff);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 15px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: opacity .2s, transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 24px rgba(0,200,255,0.3);
+  margin-top: 4px;
+}
+#lm-submit:hover:not(:disabled) {
+  opacity: .9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,200,255,0.4);
+}
+#lm-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+.lm-privacy {
+  font-size: 11px;
+  color: rgba(122,155,191,0.55);
+  margin-top: 10px;
+}
+
+#lm-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+}
+#lm-success .lm-check {
+  width: 56px; height: 56px;
+  background: rgba(0,230,118,0.12);
+  border: 2px solid #00e676;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+}
+#lm-success h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  color: #00e676;
+  text-transform: uppercase;
+}
+#lm-success p { color: #7a9bbf; font-size: 14px; margin: 0; }
+
+@media (max-width: 540px) {
+  #lm-box { padding: 36px 24px 30px; }
+}
+</style>
+
+<div id="lm-overlay" role="dialog" aria-modal="true" aria-labelledby="lm-headline">
+  <div id="lm-box">
+    <button id="lm-close" aria-label="Close">&times;</button>
+    <div class="lm-badge">&#9889; Free Download</div>
+    <h2 id="lm-headline">GRAB YOUR FREE<br><span>AI CHEAT SHEET</span></h2>
+    <p>The quick-reference guide to the best AI tools for business — yours free, instant delivery to your inbox.</p>
+    <div class="lm-preview">
+      <span>📄</span>
+      <span><strong>AI Cheat Sheet PDF</strong> &nbsp;·&nbsp; Instant delivery to your inbox</span>
+    </div>
+    <form id="lm-form" novalidate>
+      <input type="text"  id="lm-fname"  name="firstName" placeholder="Your First Name"    autocomplete="given-name"  required />
+      <input type="email" id="lm-email"  name="email"     placeholder="Your Best Email"    autocomplete="email"       required />
+      <button type="submit" id="lm-submit">SEND ME THE FREE CHEAT SHEET</button>
+      <p class="lm-privacy">🔒 No spam. Unsubscribe anytime.</p>
+    </form>
+    <div id="lm-success">
+      <div class="lm-check">✓</div>
+      <h3>You're In!</h3>
+      <p>Your cheat sheet is on its way — check your inbox in the next few minutes!</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay   = document.getElementById('lm-overlay');
+  var form      = document.getElementById('lm-form');
+  var success   = document.getElementById('lm-success');
+  var closeBtn  = document.getElementById('lm-close');
+  var submitBtn = document.getElementById('lm-submit');
+  var WEBHOOK   = 'https://hook.us2.make.com/qtrzmaoax13xpuqt372zkgwp0o0pbfgu';
+  var SHOWN_KEY = 'aispro_subscribed';
+
+  function showPopup() {
+    if (localStorage.getItem(SHOWN_KEY)) return;
+    overlay.classList.add('lm-show');
+  }
+  function hidePopup() { overlay.classList.remove('lm-show'); }
+
+  setTimeout(showPopup, 5000);
+  document.addEventListener('mouseleave', function (e) {
+    if (e.clientY <= 0) showPopup();
+  });
+
+  closeBtn.addEventListener('click', hidePopup);
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) hidePopup();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') hidePopup();
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var fname = document.getElementById('lm-fname').value.trim();
+    var email = document.getElementById('lm-email').value.trim();
+    if (!fname || !email) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SENDING…';
+
+    fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        firstName: fname,
+        source: 'Website Popup',
+        date: new Date().toISOString().split('T')[0]
+      })
+    })
+    .then(function () {
+      localStorage.setItem(SHOWN_KEY, '1');
+      form.style.display = 'none';
+      success.style.display = 'flex';
+      setTimeout(hidePopup, 4000);
+    })
+    .catch(function () {
+      localStorage.setItem(SHOWN_KEY, '1');
+      form.style.display = 'none';
+      success.style.display = 'flex';
+      setTimeout(hidePopup, 4000);
+    });
+  });
+})();
+</script>
+<!-- ===== END LEAD MAGNET POPUP ===== -->
+
 </body>
 </html>
