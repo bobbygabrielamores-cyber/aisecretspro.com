@@ -1379,17 +1379,21 @@ Disclaimer: Please note that this product does not provide any guarantee of inco
     submitBtn.disabled = true;
     submitBtn.textContent = 'SENDING…';
 
+    var params = new URLSearchParams();
+    params.append('firstName', fname);
+    params.append('email', email);
+
     fetch(WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName: fname, email: email })
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
     })
     .then(function () {
       form.style.display = 'none';
       success.style.display = 'flex';
     })
     .catch(function () {
-      // still show success + download even if webhook fails
       form.style.display = 'none';
       success.style.display = 'flex';
     });
