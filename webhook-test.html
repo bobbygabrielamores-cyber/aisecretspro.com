@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Webhook Test — AI Secrets Pro</title>
+<style>
+  body { font-family: monospace; background: #050d1a; color: #00c8ff; padding: 40px; }
+  h1 { margin-bottom: 24px; font-size: 18px; }
+  button {
+    background: #00c8ff; color: #050d1a; border: none; padding: 12px 28px;
+    font-family: monospace; font-size: 14px; font-weight: bold; cursor: pointer;
+    border-radius: 4px; margin-top: 16px;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  pre {
+    background: #091628; border: 1px solid #0d2a4a; padding: 16px;
+    border-radius: 6px; white-space: pre-wrap; word-break: break-all;
+    margin-top: 20px; font-size: 13px; line-height: 1.7;
+    min-height: 60px;
+  }
+  .ok  { color: #00e676; }
+  .err { color: #ff5252; }
+  .info { color: #7a9bbf; }
+</style>
+</head>
+<body>
+<h1>🧪 Make.com Webhook Test</h1>
+
+<div>
+  <div class="info" style="margin-bottom:8px;font-size:13px;">Sending test payload:</div>
+  <pre id="payload"></pre>
+  <button id="btn" onclick="runTest()">▶ RUN TEST</button>
+</div>
+
+<div style="margin-top:32px;">
+  <div class="info" style="margin-bottom:8px;font-size:13px;">Result:</div>
+  <pre id="result">Waiting for test…</pre>
+</div>
+
+<script>
+var WEBHOOK = 'https://hook.us2.make.com/qtrzmaoax13xpuqt372zkgwp0o0pbfgu';
+
+var testData = {
+  firstName: 'TestUser',
+  email:     'test@aisecretspro.com'
+};
+
+document.getElementById('payload').textContent = JSON.stringify(testData, null, 2)
+  + '\n\nEncoded body: ' + new URLSearchParams(testData).toString()
+  + '\nMode: no-cors | Content-Type: application/x-www-form-urlencoded';
+
+function runTest() {
+  var btn    = document.getElementById('btn');
+  var result = document.getElementById('result');
+  btn.disabled = true;
+  btn.textContent = '⏳ Sending…';
+  result.className = 'info';
+  result.textContent = 'Sending request to Make.com webhook…';
+
+  var params = new URLSearchParams();
+  params.append('firstName', testData.firstName);
+  params.append('email',     testData.email);
+
+  var start = Date.now();
+
+  fetch(WEBHOOK, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body:    params.toString()
+  })
+  .then(function (res) {
+    var ms = Date.now() - start;
+    result.className = 'ok';
+    result.textContent =
+      '✅ REQUEST SENT SUCCESSFULLY\n\n'
+      + 'Status : ' + (res.status || 'opaque (no-cors — expected)') + '\n'
+      + 'Time   : ' + ms + 'ms\n\n'
+      + '👉 Now check:\n'
+      + '   1. Your Make.com scenario history — did a new run appear?\n'
+      + '   2. Your Google Sheet — did a new row land?\n\n'
+      + 'If Make.com shows a run but the sheet is empty, the field\n'
+      + 'mapping inside your scenario needs updating:\n'
+      + '   firstName  →  First Name column\n'
+      + '   email      →  Email column';
+  })
+  .catch(function (err) {
+    var ms = Date.now() - start;
+    result.className = 'err';
+    result.textContent =
+      '❌ REQUEST FAILED\n\n'
+      + 'Error  : ' + err.message + '\n'
+      + 'Time   : ' + ms + 'ms\n\n'
+      + 'Possible causes:\n'
+      + '  • Webhook URL is wrong or inactive\n'
+      + '  • Make.com scenario is turned OFF\n'
+      + '  • Network/firewall blocking the request';
+  })
+  .finally(function () {
+    btn.disabled = false;
+    btn.textContent = '▶ RUN TEST AGAIN';
+  });
+}
+</script>
+</body>
+</html>
